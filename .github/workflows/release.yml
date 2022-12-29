@@ -57,5 +57,5 @@ jobs:
           SELEFRA_TOKEN: ${{ secrets.SELEFRA_TOKEN }}
         run: |
           cd /tmp/ && git clone https://${SELEFRA_TOKEN}@github.com/selefra/registry.git && cd registry/ && cp $GITHUB_WORKSPACE/.github/scripts/registry.sh . \
-          && cp $GITHUB_WORKSPACE/dist/selefra-provider-planetscale_*_checksums.txt . && bash registry.sh ${{ steps.release.outputs.version }} && cd provider/planetscale/ && git config --global user.name "bot" \
-          && git config --global user.email "bot@selefra.io" && git add . && git commit -m "update planetscale provider to ${{ steps.release.outputs.version }}" && git push
+          && cp $GITHUB_WORKSPACE/dist/selefra-provider-pagerduty_*_checksums.txt . && bash registry.sh ${{ steps.release.outputs.version }} && cd provider/pagerduty/ && git config --global user.name "bot" \
+          && git config --global user.email "bot@selefra.io" && git add . && git commit -m "update pagerduty provider to ${{ steps.release.outputs.version }}" && git push

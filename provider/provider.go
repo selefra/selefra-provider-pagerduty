@@ -6,6 +6,7 @@ import (
 	"github.com/selefra/selefra-provider-sdk/provider"
 	"github.com/selefra/selefra-provider-sdk/provider/schema"
 	"github.com/spf13/viper"
+	"os"
 )
 
 const Version = "v0.0.1"
@@ -28,6 +29,14 @@ func GetProvider() *provider.Provider {
 					pagerdutyConfig.Providers = append(pagerdutyConfig.Providers, pagerduty_client.Config{})
 				}
 
+				if pagerdutyConfig.Providers[0].Token == "" {
+					pagerdutyConfig.Providers[0].Token = os.Getenv("PAGERDUTY_TOKEN")
+				}
+
+				if pagerdutyConfig.Providers[0].Token == "" {
+					return nil, schema.NewDiagnostics().AddErrorMsg("missing token in configuration")
+				}
+
 				clients, err := pagerduty_client.NewClients(pagerdutyConfig)
 
 				if err != nil {
@@ -48,20 +57,15 @@ func GetProvider() *provider.Provider {
 		},
 		ConfigMeta: provider.ConfigMeta{
 			GetDefaultConfigTemplate: func(ctx context.Context) string {
-				return `# token: "<YOUR_ACCESS_TOKEN>"`
+				return `# token: "<YOUR_PAGERDUTY_TOKEN>"`
 			},
 			Validation: func(ctx context.Context, config *viper.Viper) *schema.Diagnostics {
-				var client_config pagerduty_client.Configs
-				err := config.Unmarshal(&client_config.Providers)
+				var clientConfig pagerduty_client.Configs
+				err := config.Unmarshal(&clientConfig.Providers)
 
 				if err != nil {
 					return schema.NewDiagnostics().AddErrorMsg("analysis config err: %s", err.Error())
 				}
-
-				if len(client_config.Providers) == 0 {
-					return schema.NewDiagnostics().AddErrorMsg("analysis config err: no configuration")
-				}
-
 				return nil
 			},
 		},
